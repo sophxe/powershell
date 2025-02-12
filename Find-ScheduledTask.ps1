@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS
-Find-ScheduledTask aims to find a scheduled task on the host with a given task name with the -Triage switch, and when passed with the Remediation switch, can remediate it from the host
+Find-ScheduledTask aims to find a scheduled task on the host with a given task name with the -Triage switch, and when passed with the Remediation switch, can remediate it from the host. This can be particularly useful in cases where the same scheduled task 
 .PARAMETER name
 The name of the task to search for.
 .EXAMPLE 
-Find-ScheduledTask.ps1 -Name 'malservice' -Triage
-Find-ScheduledTask.ps1 -Name 'malservice' -Remediate
+Find-ScheduledTask.ps1 -Name 'maltask' -Triage
+Find-ScheduledTask.ps1 -Name 'maltask' -Remediate
 #>
 
 [CmdletBinding()]
@@ -14,6 +14,8 @@ param (
     [switch]$Triage,
     [switch]$Remediate
 )
+
+    # TODO - make this better to perform string searches on task to run and not just name
 
 function Find-ScheduledTask {
     # Get scheduled tasks
