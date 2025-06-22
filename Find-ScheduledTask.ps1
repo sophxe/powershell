@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Find-ScheduledTask aims to find a scheduled task on the host with a given task name with the -Triage switch, and when passed with the Remediation switch, can remediate it from the host. This can be particularly useful in cases where the same scheduled task 
+Find-ScheduledTask aims to find a scheduled task on the host with a given task name with the -Triage switch, and when passed with the Remediation switch, can remediate it from the host. This can be particularly useful in cases where the same scheduled task is found across multiple hosts. 
 .PARAMETER name
 The name of the task to search for.
 .EXAMPLE 
