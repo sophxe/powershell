@@ -1,3 +1,10 @@
+<#
+.SYNOPSIS
+Find-MaliciousRMM aims to uncover any potentially malicious RMM tools installed on a host by determining which RMM executables have been recently written to the host in the last 7 days. While this is not a defintiive list, nor a fool-proof manner to determine if an install is malicious, it can help identify some quick wins. It is always vital to determine first what is normal within your environment before assessing a given binary as malicious.
+.EXAMPLE 
+Find-MaliciousRMM.ps1
+#>
+
 # Define known RMM tools, install paths, and executable names - WIP
 $knownRMMs = @(
     @{ Name = "TeamViewer"; Paths = @("C:\Program Files\TeamViewer", "C:\Program Files (x86)\TeamViewer"); Executables = @("TeamViewer.exe"); LogPaths = @("C:\Program Files\TeamViewer\Connections_incoming.txt") },
