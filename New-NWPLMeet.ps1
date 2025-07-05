@@ -73,7 +73,7 @@ if ($CheckMeetFileExists -And !$CheckPath) {
     if ($CheckFileCreate) {
         Write-Host "[-] $MeetFile converted from original.csv to meet.csv and entries.csv" -ForegroundColor Green
         Get-ChildItem . -Recurse -Exclude *.csv | Remove-Item -Recurse -Force
-        Write-Host "$NewFolderName cleaned up and ready for pushing" -ForegroundColor Green
+        Write-Host "[-] $NewFolderName cleaned up and ready for pushing" -ForegroundColor Green
     }
 
     else {
@@ -86,7 +86,7 @@ if ($CheckMeetFileExists -And !$CheckPath) {
     git.exe commit $BranchName -m "Adding new meet"
     git.exe push -u origin adding-new-meet-$NewFolderName
 
-    Write-Host "Upload of $MeetFile to your Github repo successful - go and check the pipeline!" -ForegroundColor Green
+    Write-Host "[-] Upload of $MeetFile to your Github repo successful - go and check the pipeline!" -ForegroundColor Green
     git.exe checkout main
 }
 
