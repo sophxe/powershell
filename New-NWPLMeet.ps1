@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-New-NWPLMeet.ps1 takes a csv file exported from OpenPowerlifting software, formats it using the openlifter-convert script, and then creates a new meet and pushes it to your local fork of the OpenPowerlifting project in GitLab. You will then need to create a pull request for your changes to be committed to the upstream project. You may also need to edit the location of your local fork in the $EpaMeetData variable. The script assumes you have already configured Git locally. Once the script is complete, it will rename the file in your Downloads folder with the .DONE extension.
+New-NWPLMeet.ps1 takes a csv file exported from OpenPowerlifting software, formats it using the openlifter-convert script, and then creates a new meet and pushes it to your local fork of the OpenPowerlifting project in GitLab. You will then need to create a pull request for your changes to be committed to the upstream project. You may also need to edit the location of your local fork in the $EpaMeetData variable, and the path to your Python binary. The script assumes you have already configured Git locally. Once the script is complete, it will rename the file in your Downloads folder with the .DONE extension.
 .PARAMETER File
 The name of the file. This assumes the file is already within your local Downloads folder, and has the .opl.csv extension as exported from OpenLifter
 .EXAMPLE 
