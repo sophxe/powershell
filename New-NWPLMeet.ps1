@@ -14,13 +14,11 @@ param (
 )
 
 $ErrorActionPreference = "Stop"
-
-# Check file parameter if it exists and is in the right format
-
 $EpaMeetData = "$Env:USERPROFILE\openpl\opl-data\meet-data\epa\"
 $MeetFolder = Get-Item "$Env:USERPROFILE\Downloads\"
 $MeetFile = "$MeetFolder\$File"
 
+# Check file parameter if it exists and is in the right format
 $CheckMeetFileExists = Test-Path $MeetFile
 
 if ($CheckMeetFileExists -And $MeetFile -notlike "*.opl.csv") {
@@ -37,14 +35,12 @@ $NewFolderName = $LastFolderNumber + 1
 $CheckPath = Test-Path $EpaMeetData\$NewFolderName
 
 if ($CheckMeetFileExists -And !$CheckPath) {
-
     Set-Location $EpaMeetData
 
     # make new folder location
     $NewFolderLocation = $EpaMeetData + $NewFolderName
 
     # Create new branch and switch into it
-
     git.exe checkout -b adding-new-meet-$NewFolderName
 
     # Create the new directory
@@ -53,10 +49,11 @@ if ($CheckMeetFileExists -And !$CheckPath) {
 
     # move meet data to newly created folder and then run the convert.py 
     Set-Location $NewFolderLocation
-
     Copy-Item $MeetFile .
+    
     # rename the original meet file so it can be marked as done
     Rename-Item $MeetFile "$Meetfile.DONE"
+    
     # reset the $MeetFile variable so it now has the new location and then rename it to original.csv for parsing
     $MeetFile = Get-ChildItem . -Filter *.opl.csv
     Rename-Item $MeetFile .\original.csv 
@@ -85,7 +82,6 @@ if ($CheckMeetFileExists -And !$CheckPath) {
     git.exe add .
     git.exe commit $BranchName -m "Adding new meet"
     git.exe push -u origin adding-new-meet-$NewFolderName
-
     Write-Host "[-] Upload of $MeetFile to your Github repo successful - go and check the pipeline!" -ForegroundColor Green
     git.exe checkout main
 }
