@@ -1,46 +1,55 @@
 <#
 .SYNOPSIS
-New-NWPLMeet.ps1 takes a csv file exported from OpenPowerlifting software, formats it using the openlifter-convert script, and then creates a new meet and pushes it to your local fork of the OpenPowerlifting project in GitLab. You will then need to create a pull request for your changes to be committed to the upstream project. You may also need to edit the location of your local fork in the $EpaMeetData variable, and the path to your Python binary. The script assumes you have already configured Git locally. Once the script is complete, it will rename the file in your Downloads folder with the .DONE extension.
+New-NWPLMeet.ps1 takes a csv file exported from OpenPowerlifting software, formats it using the openlifter-convert script, and then creates a new meet and pushes it to your local fork of the OpenPowerlifting project. You will then need to create a pull request for your changes to be committed to the upstream project. You may also need to edit the location of your local fork in the $MeetData variable.
 .PARAMETER File
-The name of the file. This assumes the file is already within your local Downloads folder, and has the .opl.csv extension as exported from OpenLifter
+The name of the file. This assumes the file is already within your local Downloads folder.
 .EXAMPLE 
-New-NWPLMeet.ps1 -File 'Summer-Slam-2025.opl.csv'
+New-NWPLMeet.ps1 -File 'Summer-Slam-2025.opl.csv' -Fed 'epa'
 #>
 
 [CmdletBinding()]
 param (
-    [Parameter(Mandatory, HelpMessage = 'Add the file name of the OpenPL meet data')]
-    [string[]]$File
+    [Parameter(Mandatory, HelpMessage = 'Add the file name of the OpenPL meet data')][string]$File,
+    [Parameter(Mandatory, HelpMessage = 'Add the Federation name as per the repo')][string]$Fed
 )
 
 $ErrorActionPreference = "Stop"
-$EpaMeetData = "$Env:USERPROFILE\openpl\opl-data\meet-data\epa\"
+
+# Check file parameter if it exists and is in the right format
+
+$MeetData = "$Env:USERPROFILE\openpl\opl-data\meet-data\$Fed\"
 $MeetFolder = Get-Item "$Env:USERPROFILE\Downloads\"
 $MeetFile = "$MeetFolder\$File"
 
-# Check file parameter if it exists and is in the right format
 $CheckMeetFileExists = Test-Path $MeetFile
+$CheckFedExists = Test-Path $MeetData
 
 if ($CheckMeetFileExists -And $MeetFile -notlike "*.opl.csv") {
     Write-Host "[-] ERROR: Invalid file format for $File - ensure the file name ends in .opl.csv" -ForegroundColor Red
     exit
 }
 
+if (-not $CheckFedExists) {
+    Write-Host "[-] ERROR: Federation $Fed doesn't exist - double check the federation name" -ForegroundColor Red
+}
+
 # get last created folder, then add 1 to it
-$LastFolder = Get-ChildItem $EpaMeetData -Directory | Sort-Object Name | Select-Object -Last 1
+$LastFolder = Get-ChildItem $MeetData -Directory | Where-Object {$_.Name -match '\d+$'} | Sort-Object Name | Select-Object -Last 1
 $LastFolderNumber = [Int]$LastFolder.Name
 $NewFolderName = $LastFolderNumber + 1
 
 # check path doesn't already exist - this should be false if all is well
-$CheckPath = Test-Path $EpaMeetData\$NewFolderName
+$CheckPath = Test-Path $MeetData\$NewFolderName
 
 if ($CheckMeetFileExists -And !$CheckPath) {
-    Set-Location $EpaMeetData
+
+    Set-Location $MeetData
 
     # make new folder location
-    $NewFolderLocation = $EpaMeetData + $NewFolderName
+    $NewFolderLocation = $MeetData + $NewFolderName
 
     # Create new branch and switch into it
+
     git.exe checkout -b adding-new-meet-$NewFolderName
 
     # Create the new directory
@@ -49,11 +58,10 @@ if ($CheckMeetFileExists -And !$CheckPath) {
 
     # move meet data to newly created folder and then run the convert.py 
     Set-Location $NewFolderLocation
+
     Copy-Item $MeetFile .
-    
     # rename the original meet file so it can be marked as done
     Rename-Item $MeetFile "$Meetfile.DONE"
-    
     # reset the $MeetFile variable so it now has the new location and then rename it to original.csv for parsing
     $MeetFile = Get-ChildItem . -Filter *.opl.csv
     Rename-Item $MeetFile .\original.csv 
@@ -82,7 +90,8 @@ if ($CheckMeetFileExists -And !$CheckPath) {
     git.exe add .
     git.exe commit $BranchName -m "Adding new meet"
     git.exe push -u origin adding-new-meet-$NewFolderName
-    Write-Host "[-] Upload of $MeetFile to your Github repo successful - go and check the pipeline!" -ForegroundColor Green
+
+    Write-Host "Upload of $MeetFile to your Github repo successful - go and check the pipeline!" -ForegroundColor Green
     git.exe checkout main
 }
 
